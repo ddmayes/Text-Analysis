@@ -1,0 +1,187 @@
+import java.io.File;
+import java.io.PrintWriter;
+/**
+ * Binary Search Tree implemented through a node/linked based structure
+ * Final Project Text Analysis Tool
+ * CIS 261 Winter 2020 Mr. Collard
+ *
+ * @author (Drew Mayes)
+ * @version (5.1.20)
+ */
+public class BinaryTree
+{
+    int size = 0;
+    Node root;
+    //This arraylist stores the concord info
+    ArrayList <Node> RAForFreq = new ArrayList();
+    //This arraylist stores word locations
+    ArrayList <String> cndLines = new ArrayList();
+    public BinaryTree(){
+    }
+    public boolean insert(String word){
+        //Node to add
+        Node newNode = new Node(word);
+        //handling frequency
+        if(contains(word)){
+            findWord(word).frequency++;
+            return true;
+        }
+        Node current = root;
+        if(current == null){
+            root = newNode;
+            size++;
+            return true;
+        }
+        else{
+            Node parent = current;
+            while(true){
+                if((word.compareTo(current.value)) < 0){
+                    parent = current;
+                    current = current.left;
+                    if(current == null){
+                        parent.left = newNode;
+                        size++;
+                        return true;
+                    }
+                }else if((word.compareTo(current.value)) > 0){
+                    parent = current;
+                    current = current.right;
+                    if(current == null){
+                        parent.right = newNode;
+                        size++;
+                        return true;
+                    }
+                }else{
+                    return false;
+                }
+            }
+        }
+    }
+    public boolean contains(String word){
+        Node current = root;
+        while(current != null){
+            if((word.compareTo(current.value)) < 0){
+                current = current.left;
+           }else if ((word.compareTo(current.value)) > 0){
+               current = current.right;
+            }else if (current.value.equalsIgnoreCase(word)){
+                return true;
+                //found it
+            }else{
+                return false;
+            }
+        }
+        return false;
+        //didn't find word
+    }
+    public void inOrderTraversal(Node e){
+         if(e != null){
+            inOrderTraversal(e.left);
+            //System.out.println(e.value + " " + e.frequency+": "+e.locations.print());
+            cndLines.add(e.value + " " + e.frequency+": "+e.locations.print());
+            RAForFreq.add(e);
+            inOrderTraversal(e.right);
+        }
+    }
+    public void printCNDtoFile(Node e, String filePathFromTextField)throws Exception{
+        //Prints to a file
+        String[] endOfPath = filePathFromTextField.split("[.]");
+        String filePath = endOfPath[0]+"_CND."+endOfPath[1];
+        File cndFile = new File("/Users/drewmayes/Desktop/CIS Stuff/FinalProjText-copy/"+filePath);
+        PrintWriter mywriter = new PrintWriter(cndFile);
+        for(int i = 0; i < cndLines.size(); i++){
+            mywriter.println(cndLines.get(i));
+        }
+        System.out.println();
+        mywriter.println("BST Statistics");
+        mywriter.println("-------------------");
+        mywriter.println("Number of Nodes: "+this.getSize());
+        mywriter.println("Tree Height: "+this.root.getHeight());
+        mywriter.close();
+    }
+    public int getSize(){
+        return size;
+    }
+    public Node findWord(String word){
+        Node current = root;
+        while(current != null){
+            if((word.compareTo(current.value)) < 0){
+                current = current.left;
+           }else if ((word.compareTo(current.value)) > 0){
+               current = current.right;
+            }else if (current.value.equalsIgnoreCase(word)){
+                return current;
+                //found it
+            }
+        }
+        return new Node("Didn't find word");
+        //didn't find word
+    }
+    public void sortByFrequency(String filePathFromTextField)throws Exception{
+        //This method also prints the frequency analysis to a new file--------------------------------------------------------
+        String[] endOfPath = filePathFromTextField.split("[.]");
+        String filePath = endOfPath[0]+"_FRQ."+endOfPath[1];
+        File frqFile = new File("/Users/drewmayes/Desktop/CIS Stuff/FinalProjText-copy/"+filePath);
+        PrintWriter writer = new PrintWriter(frqFile);
+        
+        //Bubble sort the list in decreasing frequency Listing 23.4--------------------------------------------------------
+        Node[] raToSort = new Node[RAForFreq.size()];
+        for(int i = 0; i < raToSort.length; i++){
+            raToSort[i] = RAForFreq.get(i);
+        }
+        boolean needNextPass = true;
+        for(int k =1; k < raToSort.length && needNextPass; k++){
+            needNextPass = false;
+            for(int i = 0; i < raToSort.length-k; i++){
+                if(raToSort[i].frequency < raToSort[i+1].frequency){
+                    Node temp = raToSort[i];
+                    raToSort[i] = raToSort[i+1];
+                    raToSort[i+1] = temp;
+                    needNextPass = true;
+                }
+            }
+        }
+        for(int i = 0; i < raToSort.length; i++){
+            writer.println(raToSort[i].value+" "+raToSort[i].frequency);
+        }
+        writer.close();
+    }
+    public void printCNDLines(boolean topValues){
+        if(topValues == false){
+        for(int i = 0; i < cndLines.size(); i++){
+            System.out.println(cndLines.get(i));
+        }
+        }else{
+        for(int i = 0; i < 10; i++){
+            System.out.println(cndLines.get(i));
+        }    
+        }
+        System.out.println();
+        System.out.println("BST Statistics");
+        System.out.println("-------------------");
+        System.out.println("Number of Nodes: "+this.getSize());
+        System.out.println("Tree Height: "+this.root.getHeight());
+    }
+    //Definition of a node--------------------------------------------------------
+    class Node{
+        String value;
+        Node left;
+        Node right;
+        int frequency = 1;
+        Set <Integer> locations = new Set<>();
+        public Node(String word){
+            value = word;
+        }
+        public int getHeight(){
+            int leftSub = 0;
+            int rightSub = 0;
+            if(this.left != null){
+                leftSub = this.left.getHeight();
+            }
+            if(this.right != null){
+                rightSub = this.right.getHeight();
+            }
+            return 1 + Math.max(leftSub, rightSub);
+        }
+    }
+}
