@@ -2,8 +2,7 @@ import java.io.File;
 import java.io.PrintWriter;
 /**
  * Binary Search Tree implemented through a node/linked based structure
- * Final Project Text Analysis Tool
- * CIS 261 Winter 2020 Mr. Collard
+ * Text Analysis Tool
  *
  * @author (Drew Mayes)
  * @version (5.1.20)
