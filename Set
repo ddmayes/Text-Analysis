@@ -1,0 +1,35 @@
+
+/**
+ * Custom set class implemented with ArrayList
+ * Text Analysis Tool
+ *
+ * @author (Drew Mayes)
+ * @version (5.1.20)
+ */
+public class Set<E>
+{
+    ArrayList set = new ArrayList();
+    public Set()
+    {
+    }
+    public void add(E e){
+        if(!(checkForDuplicates(e))){
+            set.add(e);
+        }
+    }
+    public boolean checkForDuplicates(E e){
+        for(int i = 0; i < set.size(); i++){
+            if(e.equals(set.get(i))){
+                return true;
+            }
+        }
+        return false;
+    }
+    public String print(){
+        String s = new String();
+        for(int i = 0; i < set.size(); i++){
+        s = s + set.get(i) + " ";
+       }
+       return s;
+    }
+}
