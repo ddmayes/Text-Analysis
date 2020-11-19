@@ -1,0 +1,285 @@
+import java.io.PrintWriter;
+import java.io.File;
+import java.util.Scanner;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+/**
+ * Final Project Text Analysis Tool 
+ * CIS 261 Winter 2020 Mr. Collard 
+ * GUI, text processing, and display component
+ *
+ * @author (Drew Mayes)
+ * @version (5.1.20)
+ */
+public class GUI extends Application
+{
+    //Assumed to be a text file printed to the console not case sensitive
+    boolean caseSensitive = false;
+    boolean proseMode = true;
+    boolean javaMode = false;
+    boolean topValues = false;
+    boolean printToConsole = true;
+    //Variable since it depends on the suer input, used by BST class in creation of file paths
+    String filePathFromTextField;
+    BinaryTree tree = new BinaryTree();
+    @Override
+    public void start(Stage stage) throws Exception
+    {
+        //Buttons and selection modes--------------------------------------------------------
+        Label selectMode = new Label("Select Mode");
+        selectMode.setStyle("-fx-color: gray; -fx-font: 20px Serif");
+        RadioButton textModeButton = new RadioButton("Text");
+        RadioButton javaModeButton = new RadioButton("Java");
+        RadioButton htmlModeButton = new RadioButton("HTML");
+        
+        ToggleGroup modes = new ToggleGroup();
+        textModeButton.setToggleGroup(modes);
+        javaModeButton.setToggleGroup(modes);
+        htmlModeButton.setToggleGroup(modes);
+        
+        textModeButton.setOnAction(e->{
+            if(textModeButton.isSelected()){
+                proseMode = true;
+            }
+        });
+        javaModeButton.setOnAction(e->{
+            if(javaModeButton.isSelected()){
+                javaMode = true;
+            }
+        });
+        htmlModeButton.setOnAction(e->{
+            if(htmlModeButton.isSelected()){
+                proseMode = true;
+            }
+        });
+        
+        //Case sensitivity buttons--------------------------------------------------------
+        Label caseSense = new Label("Case Sensitive?");
+        caseSense.setStyle("-fx-color: gray; -fx-font: 20px Serif");
+        RadioButton caseSensitiveButton = new RadioButton("Yes");
+        RadioButton notCaseSensitiveButton = new RadioButton("No");
+        
+        ToggleGroup caseSensitivtyGroup = new ToggleGroup();
+        caseSensitiveButton.setToggleGroup(caseSensitivtyGroup);
+        notCaseSensitiveButton.setToggleGroup(caseSensitivtyGroup);
+        
+        caseSensitiveButton.setOnAction(e->{
+            if(caseSensitiveButton.isSelected()){
+                caseSensitive = true;
+            }
+        });
+        notCaseSensitiveButton.setOnAction(e->{
+            if(notCaseSensitiveButton.isSelected()){
+                caseSensitive = false;
+            }
+        });
+        
+        //Output of results buttons--------------------------------------------------------
+        Label outputOfResults = new Label("Output of results");
+        outputOfResults.setStyle("-fx-color: gray; -fx-font: 20px Serif");
+        RadioButton outputResultsConsoleButton = new RadioButton("Console");
+        RadioButton outputResultsFileButton = new RadioButton("File");
+        
+        ToggleGroup outputResultsToWhere = new ToggleGroup();
+        outputResultsConsoleButton.setToggleGroup(outputResultsToWhere);
+        outputResultsFileButton.setToggleGroup(outputResultsToWhere);
+        
+        outputResultsConsoleButton.setOnAction(e->{
+            if(outputResultsConsoleButton.isSelected()){
+                printToConsole = true;
+            }
+        });
+        outputResultsFileButton.setOnAction(e->{
+            if(outputResultsFileButton.isSelected()){
+                printToConsole = false;
+            }
+        });
+        
+        //Output size buttons--------------------------------------------------------
+        Label outputSize = new Label("Output Size");
+        outputSize.setStyle("-fx-color: gray; -fx-font: 20px Serif");
+        RadioButton outputSizeFullButton = new RadioButton("Full output");
+        RadioButton outputSizeTopValuesButton = new RadioButton("Top Values");
+        
+        ToggleGroup outputSizeGroup = new ToggleGroup();
+        outputSizeFullButton.setToggleGroup(outputSizeGroup);
+        outputSizeTopValuesButton.setToggleGroup(outputSizeGroup);
+        
+        outputSizeFullButton.setOnAction(e->{
+            if(outputSizeFullButton.isSelected()){
+                topValues = false;
+            }
+        });
+        outputSizeTopValuesButton.setOnAction(e->{
+            if(outputSizeTopValuesButton.isSelected()){
+                topValues = true;
+            }
+        });
+        
+        //Path input--------------------------------------------------------------------------------
+        Label pathLabel = new Label("Enter the name of your file including .txt .java or .html");
+        pathLabel.setStyle("-fx-color: gray; -fx-font: 15px Serif");
+        TextField pathField = new TextField();
+        
+        //Pane structuring--------------------------------------------------------
+        GridPane pane = new GridPane();
+        pane.setPadding(new Insets(10, 10, 10, 10));
+        pane.setMinSize(300, 300);
+        pane.setVgap(10);
+        pane.setHgap(10);
+        
+        pane.add(selectMode, 1, 0);
+        pane.add(textModeButton, 0, 1);
+        pane.add(javaModeButton, 1, 1);
+        pane.add(htmlModeButton, 2, 1);
+        pane.add(caseSense, 1, 2);
+        pane.add(caseSensitiveButton, 0, 3);
+        pane.add(notCaseSensitiveButton, 2, 3);
+        pane.add(outputOfResults, 1, 4);
+        pane.add(outputResultsConsoleButton, 0, 5);
+        pane.add(outputResultsFileButton, 2, 5);
+        pane.add(outputSize, 1, 6);
+        pane.add(outputSizeFullButton, 0, 7);
+        pane.add(outputSizeTopValuesButton, 2, 7);
+        
+        HBox hbox = new HBox(5);
+        hbox.getChildren().add(pathLabel);
+        hbox.getChildren().add(pathField);
+        
+        VBox vbox = new VBox(5);
+        
+        BorderPane border = new BorderPane();
+        border.setTop(pane);
+        pane.setAlignment(Pos.CENTER);
+        hbox.setAlignment(Pos.CENTER);
+        border.setCenter(hbox);
+        
+        //The main show, pressing enter to run the tool--------------------------------------------------------
+        border.setOnKeyPressed(e->{
+            try{
+            if(e.getCode() == KeyCode.ENTER){
+                filePathFromTextField = pathField.getText();
+                border.setCenter(vbox);
+                border.setTop(new Text("Analysis of: "+filePathFromTextField));
+                readFile(filePathFromTextField);
+               if(!(printToConsole)){
+                    tree.printCNDtoFile(tree.root, filePathFromTextField);
+                    vbox.getChildren().add(new Text("Successfully printed to external file"));
+                }
+                //printing the frq file
+                tree.sortByFrequency(filePathFromTextField);
+                throw new Exception();
+            }
+        }catch(Exception ex){
+            //border.setCenter(new Text("File not found"));
+        }
+        });
+        
+        //Placing in stage--------------------------------------------------------
+        Scene scene = new Scene(border, 580,380);
+        stage.setTitle("Text Analysis Tool");
+        stage.setScene(scene);
+        stage.show();
+        
+    }
+    public void readFile(String filePathFromTextField)throws Exception{
+        //Grabbing the file path, all files must be in the same folder as the program----------------
+        String filePath = "/Users/drewmayes/Desktop/CIS Stuff/FinalProjText-copy/";
+        String finalFilePath = filePath + filePathFromTextField;
+        java.io.File file = new File(finalFilePath);
+
+        
+        //Reading the file and processing--------------------------------------------------------
+        Scanner input = new Scanner(file);
+        while(input.hasNextLine()){
+            int lineCount = 1;
+            String lineRead = input.nextLine();
+            String[] parsedLine = lineRead.split("[ ]+");
+            
+            if(proseMode && (caseSensitive == false)){
+            /*For prose, I chose to remove all punctuation and numbers 
+             * and make case insensitive and then add it to the tree*/
+            for(int i = 0; i < parsedLine.length; i++){
+                String current = parsedLine[i];
+                current = current.replaceAll("\\s+", "");
+                current = current.replaceAll("\\p{Punct}","");
+                current = current.toLowerCase();
+                if(!(isInteger(current)) && !(current.equals("")))
+                tree.insert(current);
+            }
+           }
+           else if(javaMode){
+            /*For .java files, case sensitivity is maintained while
+             * while syntax and numbers are ommitted*/
+            for(int i = 0; i < parsedLine.length; i++){
+                String current = parsedLine[i];
+                current = current.replaceAll("\\s+", "");
+                current = current.replaceAll("\\p{Punct}","");
+                if(!(isInteger(current)) && !(current.equals("")))
+                tree.insert(current);
+            }
+           }
+           else if(proseMode && (caseSensitive == true)){
+               for(int i = 0; i < parsedLine.length; i++){
+                String current = parsedLine[i];
+                current = current.replaceAll("\\s+", "");
+                current = current.replaceAll("\\p{Punct}","");
+                if(!(isInteger(current)) && !(current.equals("")))
+                tree.insert(current);
+            }
+           }
+        }
+        input.close();
+        
+        //Method for determining line numbers/locations of words--------------------------------------------------------
+        Scanner lineInput = new Scanner(file);
+        int lineCount = 1;
+        while(lineInput.hasNextLine()){
+            String [] wordLoc= lineInput.nextLine().split(" ");
+            for(String word: wordLoc){
+               tree.findWord(word).locations.add(lineCount);
+            }
+            lineCount++;
+        }
+        lineInput.close();
+        
+        //This is what prints to the console--------------------------------------------------------
+        tree.inOrderTraversal(tree.root);
+        tree.printCNDLines(topValues);
+    }
+    //Determining is a given string input is an integer--------------------------------------------------------
+    public static boolean isInteger(String s) {
+      boolean isValidInteger = false;
+      try
+      {
+         Integer.parseInt(s);
+         isValidInteger = true;
+      }
+      catch (NumberFormatException ex)
+      {
+         // s is not an integer
+      }
+      return isValidInteger;
+   }
+   public static void main(String [] args){
+       Application.launch(args);
+    }
+}
+
+
