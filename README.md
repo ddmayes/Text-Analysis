@@ -1,2 +1,9 @@
 # Text-Analysis
-Text analysis tool utilizing multiple data structures. Creates a binary search tree provided one of many file formats. Uses GUI
+Text analysis tool utilizing multiple data structures. Creates a binary search tree provided one of many file formats. Uses GUI.
+
+Overview
+This tool implements 3 data structures/ADTs in order to read, store, and print words from text files. The user can select a mode: Text, Java, or HTML as well as specifying case sensitivity, output location and output size. All of these options are considered before the program begins to process the data.
+A specified text file is read in (subtle differences in processing at this point depending on the user selections) and then added to a binary search tree. The text file is read line by line and parsed by word. The algorithm adds a count to a word/node’s “frequency” variable if it attempts to add a word that is already contained in the tree. Another scanner scans each line of the file and keeps track of a lineCount variable assigned to each word/node if a word is contained in that line. This is the “locations” set (implemented through an arraylist) since words can be repeated in the same line and would not require the same number twice.
+An inOrderTraversal method traverses the tree and assigns string of information (string in the format: word: frequency: locations/line numbers) and assigns that string to an arraylist cndLines. This is arraylist is printed to the console line by line if the user specifies and to an external file if specified. 
+Since each node has a frequency variable and each node is in the tree, the nodes are bubble sorted by their frequency in descending order and printed to and external FRQ file
+One caveat to my project was that I was not able to implement a JFileChooser so file paths are mostly hard coded. All files must be in the same folder as this program and need only input of the end of the name such as “peter.txt” or “samp_java.txt” on the users end.
