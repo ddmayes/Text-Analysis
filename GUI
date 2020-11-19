@@ -20,8 +20,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 /**
- * Final Project Text Analysis Tool 
- * CIS 261 Winter 2020 Mr. Collard 
+ * Text Analysis Tool 
  * GUI, text processing, and display component
  *
  * @author (Drew Mayes)
